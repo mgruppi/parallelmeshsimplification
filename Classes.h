@@ -3,7 +3,6 @@
 #include <vector>
 #include <assert.h>
 #include <set>
-
 using namespace std;
 
 class Point;

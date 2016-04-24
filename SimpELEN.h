@@ -33,8 +33,6 @@ public:
   int failed_cost;
   int edges_outdated;
 
-
-
   int grid_res; // grid has N x N x N cells
   int n_cells;
   double dim[3]; //dimension of the grid x,y,z
