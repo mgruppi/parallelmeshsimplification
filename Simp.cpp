@@ -4,6 +4,7 @@
 #include "Surface.h"
 #include "SimpVertexClustering.h"
 #include "SimpELEN.h"
+#include "SimpQEM.h"
 
 using namespace std;
 
@@ -53,11 +54,15 @@ int main(int argc, char** argv)
     int goal_vertices = goal*s->m_points.size();
     SimpELEN* elen = new SimpELEN(s, nthreads);
     //elen->initUniformGrid(gridresolution);
+    //elen->initEdgeCosts();
     elen->simplify(goal_vertices,gridresolution);
   }
   else if (method == "qem")
   {
     method = "QEM";
+    int goal_vertices = goal*s->m_points.size();
+    SimpQEM* qem = new SimpQEM(s,nthreads);
+    qem->simplify(goal_vertices,gridresolution);
   }
   else if (method == "vc")
   {
@@ -82,7 +87,7 @@ int main(int argc, char** argv)
   string output = sub+qtd+"_"+method+".off";
   cerr << "Writing output to " + output <<endl;
   s->saveOFF(output);
-  s->dumpBoundingBox();
+  //s->dumpBoundingBox();
 
   cerr << redtty << "Bounding box(min): " << s->bbox.minx << " " << s->bbox.miny << " " << s->bbox.minz << endl;
   cerr << redtty << "Bounding box(max): " << s->bbox.maxx << " " << s->bbox.maxy << " " << s->bbox.maxz << endl;

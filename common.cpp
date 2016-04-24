@@ -23,3 +23,29 @@ long long int getNanoseconds(timespec t)
 {
   return (1000000000*t.tv_sec) + t.tv_nsec;
 }
+
+
+//QEM
+//Add quadric matrix b to quadric matrix a
+void sumQuadrics(double a[4][4], double b[4][4])
+{
+    for(int i = 0 ; i < 4 ; ++i)
+    {
+        for(int j = 0 ; j < 4 ; ++j)
+        {
+            a[i][j]+=b[i][j];
+        }
+    }
+}
+
+//Copy b into a
+void copyQuadrics(double a[4][4], double b[4][4])
+{
+  for(int i = 0 ; i < 4 ; ++ i)
+  {
+    for (int j = 0 ; j < 4 ; ++j)
+    {
+      a[i][j] = b[i][j];
+    }
+  }
+}

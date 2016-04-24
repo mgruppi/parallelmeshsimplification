@@ -6,31 +6,6 @@
 #include <cmath>
 
 
-
-//Add quadric matrix b to quadric matrix a
-void sumQuadrics(double a[4][4], double b[4][4])
-{
-    for(int i = 0 ; i < 4 ; ++i)
-    {
-        for(int j = 0 ; j < 4 ; ++j)
-        {
-            a[i][j]+=b[i][j];
-        }
-    }
-}
-
-//Copy b into a
-void copyQuadrics(double a[4][4], double b[4][4])
-{
-  for(int i = 0 ; i < 4 ; ++ i)
-  {
-    for (int j = 0 ; j < 4 ; ++j)
-    {
-      a[i][j] = b[i][j];
-    }
-  }
-}
-
 Surface::Surface(string inputFile)
 {
 
@@ -44,8 +19,6 @@ Surface::Surface(string inputFile)
   clock_gettime(CLOCK_REALTIME, &t1);
   t = diff(t0,t1);
   cout << greentty << "Time_read_input_and_init_data: " << t.tv_sec*1000 + t.tv_nsec/1000000 << deftty << endl;
-
-
 }
 
 Surface::~Surface()
