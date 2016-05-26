@@ -151,9 +151,15 @@ void SimpQEM::initQuadrics()
       vv->normalize();//Normalize so that x² + y² + z² = 1
       //Apply v0 to find parameter d of equation
       double d = vv->x*(*fit)->points[0]->x + vv->y*(*fit)->points[0]->y + vv->z*(*fit)->points[0]->z;
+      d*=-1;
       double plane_eq[4] = {vv->x, vv->y, vv->z, d};
 
       //For this plane, the fundamental quadric Kp is the product of vectors plane_eq and plane_eq(transposed) (garland97)
+      cerr << "*Points: " << (*fit)->points[0]->x <<"," <<(*fit)->points[0]->y << "," << (*fit)->points[0]->z << " | "
+      << (*fit)->points[1]->x <<"," <<(*fit)->points[1]->y << "," << (*fit)->points[1]->z << " | "
+      << (*fit)->points[2]->x <<"," <<(*fit)->points[2]->y << "," << (*fit)->points[2]->z << "\n";
+      cerr << "-> Normal v: ("<< vv->x <<","<<vv->y<<","<<vv->z<<")\n";
+      cerr << "||Plane: " << plane_eq[0] << " " << plane_eq[1] <<" " << plane_eq[2] << " " << plane_eq[3] << endl;
       for(int i = 0; i < 4; ++i)
       {
           for(int j = 0 ; j < 4; ++j)
@@ -165,9 +171,8 @@ void SimpQEM::initQuadrics()
       delete v0v1;
       delete v0v2;
       delete vv;
-
+      sumQuadrics((*pit)->Q,Kp);
     }
-    sumQuadrics((*pit)->Q,Kp);
   }
 }
 

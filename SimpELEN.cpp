@@ -342,7 +342,6 @@ void SimpELEN::updateEdgeCosts(Point* v, int i)
       cell_queue[i].push(*(*eit));
     }
   }
-  cout << "one edge update: " << tcost << endl;
 }
 
 void SimpELEN::initEdgeCosts()
