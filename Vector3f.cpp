@@ -6,13 +6,13 @@ double Vector3f::getMag()
   return sqrt(x*x + y*y + z*z);
 }
 
-Vector3f& Vector3f::cross(Vector3f& v)
+Vector3f* Vector3f::cross(Vector3f* v)
 {
-    double s1 = y*v.z - z*v.y; //x direction of cross product
-    double s2 = z*v.x - x*v.z; //y direction
-    double s3 = x*v.y - y*v.x;
+    double s1 = y*v->z - z*v->y; //x direction of cross product
+    double s2 = z*v->x - x*v->z; //y direction
+    double s3 = x*v->y - y*v->x;
 
-    Vector3f res(s1,s2,s3);
+    Vector3f* res = new Vector3f(s1,s2,s3);
 
     return res;
 }
@@ -28,4 +28,11 @@ void Vector3f::normalize()
     x = x/mag;
     y = y/mag;
     z = z/mag;
+}
+
+void Vector3f::reverse()
+{
+  x *=-1;
+  y *=-1;
+  z *=-1;
 }

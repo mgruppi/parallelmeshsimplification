@@ -140,7 +140,7 @@ void SimpELEN::simplify(int goal, int gridres=1)
   failed_cost = 0;
   edges_outdated = 0;
   unsigned long time_grid = 0;
-  timespec t0,t1,t,tu;
+  timespec t0,t1,t,tu,tu0,tu1;
   timespec tr0,tr1,tr; //time for resetting queue
   timespec tgrid0,tgrid1,tgrid;//Time for constructing grid
   clock_gettime(CLOCK_REALTIME, &t0);
@@ -191,11 +191,16 @@ void SimpELEN::simplify(int goal, int gridres=1)
 
         if(collapsed)
         {
+          clock_gettime(CLOCK_REALTIME,&tu0);
           vr++;
           updateEdgeCosts(e.p2, i);
           currentEdgeCost[e.id] = INF; // Edge has been removed
           #pragma omp atomic
           vertices_removed++;
+
+          clock_gettime(CLOCK_REALTIME,&tu1);
+          tu = diff (tu0,tu1);
+          time_updating+=getNanoseconds(tu);
         }
       }
       //cerr << "Vertices removed: " << vr << endl;
@@ -266,7 +271,7 @@ void SimpELEN::simplify(int goal, int gridres=1)
 
 
   cout << bluetty << "Time_simplify: " << getNanoseconds(t)/1000000 << deftty << endl;
-  // cout << bluetty << "Time_updating: " << time_updating/1000000 << deftty << endl;
+  cout << bluetty << "Time_updating: " << time_updating/1000000 << deftty << endl;
   // cout << yellowtty << "Time_iterating: " << time_iterating/1000000 << deftty << endl;
   // cout << lightbluetty << "Time_collapsing: " << time_collapsing/1000000 << deftty << endl;
   // cout << lightpurpletty << "\tRemoving faces: " << s->time_faces/1000000 << deftty<<endl;
@@ -297,38 +302,23 @@ double SimpELEN::getCost(Edge* e)
   return cost;
 }
 
-void SimpELEN::updateEdgeCosts(Point* v)
-{
-  edges_outdated += v->from.size() + v->to.size();
-
-  for(vector<Edge*>::iterator eit = v->from.begin(); eit != v->from.end(); ++ eit)
-  {
-    (*eit)->cost = getCost((*eit));
-    currentEdgeCost[(*eit)->id] = (*eit)->cost;
-    //pair<int,int> pp((*eit)->p1->id,(*eit)->p2->id);
-    //currentEdgePoints[(*eit)->id] = pp;
-    edge_queue.push(*(*eit));
-  }
-  for(vector<Edge*>::iterator eit = v->to.begin(); eit != v->to.end(); ++ eit)
-  {
-    (*eit)->cost = getCost((*eit));
-    currentEdgeCost[(*eit)->id] = (*eit)->cost;
-    //pair<int,int> pp((*eit)->p1->id,(*eit)->p2->id);
-    //currentEdgePoints[(*eit)->id] = pp;
-    edge_queue.push(*(*eit));
-  }
-}
 
 void SimpELEN::updateEdgeCosts(Point* v, int i)
 {
   edges_outdated += v->from.size() + v->to.size();
+  timespec t,t0,t1;
+  long int tcost = 0;
 
   for(vector<Edge*>::iterator eit = v->from.begin(); eit != v->from.end(); ++ eit)
   {
     if(isEntirelyInCell(*eit) && isCrownInCell((*eit)->p1) && isCrownInCell((*eit)->p2))
     {
       //cerr << "Edge update " << (*eit)->id << " - " << (*eit)->p1->id << " " << (*eit)->p2->id << endl;
+      clock_gettime(CLOCK_REALTIME,&t0);
       (*eit)->cost = getCost((*eit));
+      clock_gettime(CLOCK_REALTIME,&t1);
+      t = diff (t0,t1);
+      tcost+=getNanoseconds(t);
       currentEdgeCost[(*eit)->id] = (*eit)->cost;
       //pair<int,int> pp((*eit)->p1->id,(*eit)->p2->id);
       //currentEdgePoints[(*eit)->id] = pp;
@@ -341,13 +331,18 @@ void SimpELEN::updateEdgeCosts(Point* v, int i)
     if(isEntirelyInCell(*eit) && isCrownInCell((*eit)->p1) && isCrownInCell((*eit)->p2))
     {
       //cerr << "Edge update " << (*eit)->id << " - " << (*eit)->p1->id << " " << (*eit)->p2->id << endl;
+      clock_gettime(CLOCK_REALTIME,&t0);
       (*eit)->cost = getCost((*eit));
+      clock_gettime(CLOCK_REALTIME,&t1);
+      t = diff (t0,t1);
+      tcost+=getNanoseconds(t);
       currentEdgeCost[(*eit)->id] = (*eit)->cost;
       //pair<int,int> pp((*eit)->p1->id,(*eit)->p2->id);
       //currentEdgePoints[(*eit)->id] = pp;
       cell_queue[i].push(*(*eit));
     }
   }
+  cout << "one edge update: " << tcost << endl;
 }
 
 void SimpELEN::initEdgeCosts()

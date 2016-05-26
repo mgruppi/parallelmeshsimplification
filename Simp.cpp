@@ -67,9 +67,11 @@ int main(int argc, char** argv)
   else if (method == "vc")
   {
     method = "VCLUSTERING";
-    SimpVertexClustering* vc = new SimpVertexClustering(s, 5);
-    vc->initCells();
-    vc->simplifyClusters();
+    cout << "Vertex Clustering not available yet.\n";
+    exit(1);
+    //SimpVertexClustering* vc = new SimpVertexClustering(s, 5);
+    //vc->initCells();
+    //vc->simplifyClusters();
   }
 
 

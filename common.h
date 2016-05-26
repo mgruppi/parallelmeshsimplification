@@ -31,6 +31,8 @@ timespec diff(timespec,timespec); //Difference between timespecs
 long long int getMilliseconds(timespec); //Get Milliseconds out of a timespec
 long long int getNanoseconds(timespec);
 
+void gettime(timespec& t);
+
 //QEM functions
 void sumQuadrics(double a[4][4], double b[4][4]); //add b to a, result is in a
 void copyQuadrics(double a[4][4], double b[4][4]); //Copy b into a

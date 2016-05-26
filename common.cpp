@@ -24,6 +24,10 @@ long long int getNanoseconds(timespec t)
   return (1000000000*t.tv_sec) + t.tv_nsec;
 }
 
+void gettime(timespec& t)
+{
+  clock_gettime(CLOCK_REALTIME,&t);
+}
 
 //QEM
 //Add quadric matrix b to quadric matrix a

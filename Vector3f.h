@@ -22,8 +22,9 @@ public:
   }
 
   double getMag();
-  Vector3f& cross(Vector3f& v);
+  Vector3f* cross(Vector3f* v);
   double dot(Vector3f& v);
   void normalize();
+  void reverse();
 
 };

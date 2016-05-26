@@ -34,13 +34,24 @@ void Surface::readSurface(string inputFile)
   FILE *fin = fopen(inputFile.c_str(), "r");
 
 
+  int success;
   //Read OFF word
   char buffer[256];
-  fscanf(fin, "%s\n", buffer);
+  success = fscanf(fin, "%s\n", buffer);
+
+  if(success == EOF)
+  {
+    cerr << "Could not read input file.\n";
+    exit(1);
+  }
 
   int edge_zero; //Number of edges always 0, just read it from file
-  fscanf(fin, "%d %d %d", &numVertices, &numFaces, &edge_zero);
-
+  success = fscanf(fin, "%d %d %d", &numVertices, &numFaces, &edge_zero);
+  if(success == EOF)
+  {
+    cerr << "Could not read input file.\n";
+    exit(1);
+  }
 
   //Reading vertices
 
@@ -49,7 +60,12 @@ void Surface::readSurface(string inputFile)
     double xin;
     double yin;
     double zin;
-    fscanf(fin, "%lf %lf %lf", &xin, &yin, &zin);
+    success = fscanf(fin, "%lf %lf %lf", &xin, &yin, &zin);
+    if(success == EOF)
+    {
+      cerr << "Could not read input file.\n";
+      exit(1);
+    }
     Point* aux = new Point(i, xin, yin, zin);
 
     //Set bounding box
@@ -79,7 +95,12 @@ void Surface::readSurface(string inputFile)
   {
 
    int vertices, v1, v2, v3;
-   fscanf(fin, "%d %d %d %d", &vertices, &v1,&v2,&v3);
+   success = fscanf(fin, "%d %d %d %d", &vertices, &v1,&v2,&v3);
+   if(success == EOF)
+   {
+     cerr << "Could not read input file.\n";
+     exit(1);
+   }
    Face* faux = new Face(i);
    m_faces.push_back(faux);
    faux->addPoint(m_points.at(v1));
@@ -626,33 +647,35 @@ void Surface::initQuadrics()
         double Kp[4][4];
         for(face_vec_it fit = (*pit)->faces.begin(); fit!= (*pit)->faces.end(); ++fit)
         {
-            //Calculate vectors v0v1 and v0v2
-            //v0v1
-            double x = (*fit)->points[1]->x - (*fit)->points[0]->x;
-            double y = (*fit)->points[1]->y - (*fit)->points[0]->y;
-            double z = (*fit)->points[1]->z - (*fit)->points[0]->z;
-            Vector3f v0v1(x,y,z);
-
-            //v0v2
-            x = (*fit)->points[2]->x - (*fit)->points[0]->x;
-            y = (*fit)->points[2]->y - (*fit)->points[0]->y;
-            z = (*fit)->points[2]->z - (*fit)->points[0]->z;
-
-            Vector3f v0v2(x,y,z);
-            Vector3f vv = v0v1.cross(v0v2);
-            vv.normalize(); //Normalize so that x� + y� + z� = 1
-            //Apply v0 to find parameter d of equation
-            double d = vv.x*(*fit)->points[0]->x + vv.y*(*fit)->points[0]->y + vv.z*(*fit)->points[0]->z;
-            double plane_eq[4] = {vv.x, vv.y, vv.z, d};
-
-            //For this plane, the fundamental quadric Kp is the dot product of plane_eq and plane_eq(transposed) (garland97)
-            for(int i = 0; i < 4; ++i)
-            {
-                for(int j = 0 ; j < 4; ++j)
-                {
-                    Kp[i][j] = plane_eq[i]*plane_eq[j];
-                }
-            }
+            // //Calculate vectors v0v1 and v0v2
+            // //v0v1
+            // double x = (*fit)->points[1]->x - (*fit)->points[0]->x;
+            // double y = (*fit)->points[1]->y - (*fit)->points[0]->y;
+            // double z = (*fit)->points[1]->z - (*fit)->points[0]->z;
+            // Vector3f v0v1(x,y,z);
+            //
+            // //v0v2
+            // x = (*fit)->points[2]->x - (*fit)->points[0]->x;
+            // y = (*fit)->points[2]->y - (*fit)->points[0]->y;
+            // z = (*fit)->points[2]->z - (*fit)->points[0]->z;
+            //
+            // Vector3f v0v2(x,y,z);
+            // Vector3f* vv = v0v1.cross(v0v2);
+            // vv->normalize(); //Normalize so that x� + y� + z� = 1
+            // //Apply v0 to find parameter d of equation
+            // double d = vv->x*(*fit)->points[0]->x + vv->y*(*fit)->points[0]->y + vv->z*(*fit)->points[0]->z;
+            // double plane_eq[4] = {vv->x, vv->y, vv->z, d};
+            //
+            // //For this plane, the fundamental quadric Kp is the dot product of plane_eq and plane_eq(transposed) (garland97)
+            // for(int i = 0; i < 4; ++i)
+            // {
+            //     for(int j = 0 ; j < 4; ++j)
+            //     {
+            //         Kp[i][j] = plane_eq[i]*plane_eq[j];
+            //     }
+            // }
+            //
+            // delete vv;
         }
         sumQuadrics((*pit)->Q,Kp);
     }
