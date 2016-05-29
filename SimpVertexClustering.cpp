@@ -15,7 +15,6 @@ SimpVertexClustering::~SimpVertexClustering()
 {
   delete cell;
 }
-
 void SimpVertexClustering::initCells()
 {
   //Init cells

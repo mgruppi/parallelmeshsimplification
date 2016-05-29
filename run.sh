@@ -10,4 +10,4 @@ for i in "${range[@]}"
 do
   echo "Running $input in $i"
   time ./Simplify $input 0.90 elen $i
-done
+done 

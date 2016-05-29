@@ -10,7 +10,6 @@ public:
 
   SimpVertexClustering(Surface* surf, int grid_dim);
   ~SimpVertexClustering();
-
   //Operations
   void initCells();
   void simplifyClusters();
