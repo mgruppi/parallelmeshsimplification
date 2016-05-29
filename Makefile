@@ -1,5 +1,5 @@
 Simplify: Simp.o Surface.o SimpVertexClustering.o SimpELEN.o SimpQEM.o Classes.h common.o
-	g++ -O3 -std=c++11 -fopenmp Simp.o common.o Classes.h SimpQEM.o SimpELEN.o  SimpVertexClustering.o Surface.o Vector3f.o -o Simplify
+	g++ -O3 -std=c++11 -fopenmp Simp.o common.o Classes.h SimpQEM.o SimpELEN.o  SimpVertexClustering.o Surface.o Vector3f.o -o Simplify -lCGAL
 
 Simp.o: Surface.o Simp.cpp
 	g++ -O3 -std=c++11 -c Simp.cpp
@@ -14,7 +14,7 @@ SimpQEM.o: Surface.o SimpELEN.o SimpQEM.cpp SimpQEM.h
 	g++ -O3 -fopenmp -std=c++11 -c SimpQEM.cpp
 
 Surface.o: Surface.h Surface.cpp Vector3f.o
-	g++ -O3 -std=c++11 -c Surface.cpp
+	g++ -O3 -std=c++11 -c Surface.cpp -lCGAL -frounding-math
 
 Vector3f.o: Vector3f.h Vector3f.cpp
 	g++ -O3 -std=c++11 -c Vector3f.cpp

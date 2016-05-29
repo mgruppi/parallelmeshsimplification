@@ -5,6 +5,14 @@
 #include <algorithm>
 #include <cmath>
 
+//CGAL includes
+#include <CGAL/Simple_cartesian.h>
+#include<CGAL/intersections.h>
+
+typedef CGAL::Simple_cartesian<double> K;
+typedef K::Point_3 Point3;
+typedef K::Triangle_3 Triangle3;
+
 
 Surface::Surface(string inputFile)
 {
@@ -369,6 +377,27 @@ bool Surface::collapse(Edge& e)
         }
         else //Swap p1 for p2 for this face
         {
+            //Face is about to be modified. Checking intersection.
+            Point3 p30((*fit)->points[0]->x,(*fit)->points[0]->y,(*fit)->points[0]->z);
+            Point3 p31((*fit)->points[1]->x,(*fit)->points[1]->y,(*fit)->points[1]->z);
+            Point3 p32((*fit)->points[2]->x,(*fit)->points[2]->y,(*fit)->points[2]->z);
+
+            Triangle3 face(p30,p31,p32);
+
+            for(face_vec_it fit2 = m_faces.begin(); fit2 != m_faces.end(); ++fit2)
+            {
+              Face* f = (*fit2);
+              Point3 pf0(f->points[0]->x,f->points[0]->y,f->points[0]->z);
+              Point3 pf1(f->points[1]->x,f->points[1]->y,f->points[1]->z);
+              Point3 pf2(f->points[2]->x,f->points[2]->y,f->points[2]->z);
+              Triangle3 face2(pf0,pf1,pf2);
+
+              if(CGAL::do_intersect(face,face2))
+              {
+                cerr << "***Faces " << (*fit)->id << " X " << f->id << endl;
+              }
+            }
+
             (*auxp1) = p2;
             p2->faces.push_back((*fit));
         }
@@ -465,151 +494,24 @@ bool Surface::collapse(Edge& e)
       eit++;
     }
 
+    //Append p1 edges to p2
     p2->to.insert(p2->to.end(), p1->to.begin(), p1->to.end());
     p2->from.insert(p2->from.end(),p1->from.begin(), p1->from.end());
-
-
-    // cerr << "Faces ";
-    // for(face_vec_it fit = p2->faces.begin(); fit != p2->faces.end(); ++fit)
-    // {
-    //   cerr << (*fit)->id << " ";
-    // }
-    // cerr << endl;
-    //
-    // for(edge_vec_it eit = p2->to.begin();eit != p2->to.end(); ++eit)
-    // {
-    //   Edge* e = (*eit);
-    //   cerr << greentty << e->id << " " << e->p1->id << " " << e->p2->id << " " << e->cost << endl;
-    // }
-    // for(edge_vec_it eit = p2->from.begin();eit != p2->from.end(); ++eit)
-    // {
-    //   Edge* e = (*eit);
-    //   cerr << bluetty << e->id << " " << e->p1->id << " " << e->p2->id << " " << e->cost << endl;
-    // }
-
-
-    //
-    // p2->i_to.insert(p2->i_to.end(),p1->i_to.begin(), p1->i_to.end());
-    // for(vector<int>::iterator it = p2->i_to.begin(); it !=p2->i_to.end(); ++it)
-    // {
-    //     Edge* e = m_edges[*it];
-    //     cerr << greentty << e->id << " " << e->p1->id << " " << e->p2->id << " " << e->cost << endl;
-    // }
-    // p2->i_from.insert(p2->i_from.end(),p1->i_from.begin(), p1->i_from.end());
-    // for(vector<int>::iterator it = p2->i_from.begin(); it !=p2->i_from.end(); ++it)
-    // {
-    //     Edge* e = m_edges[*it];
-    //     cerr << bluetty << e->id << " " << e->p1->id << " " << e->p2->id << " " << e->cost << endl;
-    // }
 
     clock_gettime(CLOCK_REALTIME,&t1);
     t = diff(t0,t1);
     time_edges += getNanoseconds(t);
 
-    //cout << "rem.";
+    //Can remove point p1
     clock_gettime(CLOCK_REALTIME,&t0);
     removePoint(p1);
     clock_gettime(CLOCK_REALTIME,&t1);
     t = diff(t0,t1);
     time_point+=getNanoseconds(t);
-    //cout << "remo\n";
-
 
     return true;
 }
 
-
-//*****************************************************************
-//          EDGE LENGTH METRIC
-//*****************************************************************
-//
-// void Surface::ELEN_setPlacement(Edge* e)
-// {
-//   double x = (e->p1->x + e->p2->x)/2;
-//   double y = (e->p1->y + e->p2->y)/2;
-//   double z = (e->p1->z + e->p2->z)/2;
-//   Point* p = new Point(0,x,y,z);
-//
-//   e->placement = p;
-// }
-//
-// //Computes the cost of an edge
-// double  Surface::ELEN_computeCost(Edge* eaux)
-// {
-//   ELEN_setPlacement(eaux);
-//   //copyQuadrics(eaux->placement->Q, eaux->p1->Q);
-//   //sumQuadrics(eaux->placement->Q, eaux->p2->Q); //v.Q = Q1 + Q2
-//   //cost is given by vTQv where v = {x,y,z,1}T (column vector) from eaux->placement
-//   //row vector dot 4x4 matrix dot column vectors
-//   //double cost = dist(eaux->p1,eaux->p2);
-//   //cost = abs(cost);
-//
-//   return 0;
-// }
-//
-// void Surface::ELEN_updateEdgeCost(Point* v)
-// {
-//   for(vector<Edge*>::iterator eit = v->edges.begin(); eit != v->edges.end(); ++ eit)
-//   {
-//
-//     //double prev=(*eit)->cost;
-//
-//     (*eit)->cost = ELEN_computeCost((*eit));
-//     currentEdgeCost[(*eit)->id] = (*eit)->cost;
-//
-//
-//     //cerr << "edge " << (*eit)->id << " cost changed: " << prev <<  " to " << (*eit)->cost << endl;
-//
-//     edge_queue.push(*(*eit));
-//   }
-// }
-//
-// //Compute initial costs of all edges and constructs the priority_queue
-// void Surface::ELEN_computeEdgeCosts()
-// {
-//   //Iterate over every face generating respective edges
-//   int eid = 0;
-//   //cerr << "costs - ";
-//   //TODO: avoid duplicates by only creating edges such that v1->id < v2->id
-//   for(vector<Face*>::iterator it = m_faces.begin(); it != m_faces.end(); ++it)
-//   {
-//         //First edge
-//         Edge* eaux = new Edge((*it)->points[0], (*it)->points[1]);
-//         eaux->cost = ELEN_computeCost(eaux);
-//         eaux->id = eid;
-//         edge_queue.push(*eaux);
-//         eaux->p1->edges.push_back(eaux);
-//         eaux->p2->edges.push_back(eaux);
-//         currentEdgeCost.push_back(eaux->cost);
-//         eid++;
-//
-//         //Second edge
-//         eaux = new Edge((*it)->points[0], (*it)->points[2]);
-//         eaux->cost = ELEN_computeCost(eaux);
-//         eaux->id = eid;
-//         edge_queue.push(*eaux);
-//         eaux->p1->edges.push_back(eaux);
-//         eaux->p2->edges.push_back(eaux);
-//         currentEdgeCost.push_back(eaux->cost);
-//         eid++;
-//
-//         //Third edge
-//         eaux = new Edge((*it)->points[1], (*it)->points[2]);
-//         eaux->cost = ELEN_computeCost(eaux);
-//         eaux->id = eid;
-//         edge_queue.push(*eaux);
-//         eaux->p1->edges.push_back(eaux);
-//         eaux->p2->edges.push_back(eaux);
-//         currentEdgeCost.push_back(eaux->cost);
-//         eid++;
-//
-//   }
-// }
-//
-
-//*****************************************************************
-//          END OF EDGE LENGTH METRIC
-//*****************************************************************
 
 //This should be applied to the placement vertex of an edge
 //p quadric (Q) must be the sum of the endpoints of the edge
