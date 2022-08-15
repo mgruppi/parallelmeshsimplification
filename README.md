@@ -1,6 +1,43 @@
 # parallelmeshsimplification
 Implements Parallel Implementation of 3D mesh simplification using Quadric Error Metrics and Edge Length
 
+## Setup
+
+Install [CGAL](https://www.cgal.org/download/linux.html).
+```
+sudo apt install libcgal-dev
+```
+
+Build with `make`.
+```
+make
+```
+
+Run the program with some input.
+```
+./Simplify <input_file> <fraction of points to remove> <decimation method (elen/qem)> <grid_resolution> <no. of threads>
+```
+
+### Input file format
+
+Please use the Object File Format (.off) as input file.
+You can convert most mesh formats to OFF using [MeshLab](https://www.meshlab.net/).
+
+## Example
+
+Example usage:
+
+```
+./Simplify data/bunny_zipper.off 0.25 qem 64 16
+```
+
+This simplification on the `bunny_zipper` model to remove 25% of the points using the Quadric Error Metric (QEM) with uniform grid resolution of 64 
+ running on 16 threads. 
+
+## Disclaimer
+
+The model in `data/bunny_zipper.off` is provided here for simplicity and to facilitate using this program, converted using MeshLab.
+The original model is the [Stanford Bunny](http://graphics.stanford.edu/data/3Dscanrep/). I encourage you to read about it.
 
 ## Quick update (2021-02-21)
 

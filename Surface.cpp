@@ -392,10 +392,10 @@ bool Surface::collapse(Edge& e)
               Point3 pf2(f->points[2]->x,f->points[2]->y,f->points[2]->z);
               Triangle3 face2(pf0,pf1,pf2);
 
-              if(CGAL::do_intersect(face,face2))
-              {
-                cerr << "***Faces " << (*fit)->id << " X " << f->id << endl;
-              }
+              // if(CGAL::do_intersect(face,face2))
+              // {
+              //   // cerr << "***Faces " << (*fit)->id << " X " << f->id << endl;
+              // }
             }
 
             (*auxp1) = p2;

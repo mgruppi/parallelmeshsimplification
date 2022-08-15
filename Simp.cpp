@@ -13,7 +13,7 @@ int main(int argc, char** argv)
 {
   if(argc < 6)
   {
-    cerr << "*USAGE: Simplify <input file> <% of points to remove> <method (elen/qem/vc)> <grid_resolution> <no of threads>.\n";
+    cerr << "*USAGE: Simplify <input file> <fraction of points to remove> <method (elen/qem/vc)> <grid_resolution> <no of threads>.\n";
     exit(1);
   }
 
